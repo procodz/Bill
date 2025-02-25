@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Cream Billing System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        .input-group label {
+            display: inline-block;
+            width: 200px;
+        }
+
+        .input-group input {
+            padding: 5px;
+            width: 100px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #billOutput {
+            display: none;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .total-section {
+            text-align: right;
+        }
+
+        @media print {
+            .input-section, button {
+                display: none;
+            }
+            #billOutput {
+                display: block;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="input-section">
+        <h2>Ice Cream Billing System</h2>
+        <div class="input-group">
+            <label>Butterscotch Big Cup (₹30):</label>
+            <input type="number" id="butterscotchBig" min="0" value="0">
+        </div>
+        <div class="input-group">
+            <label>Shahi Pista (₹30):</label>
+            <input type="number" id="shahiPista" min="0" value="0">
+        </div>
+        <div class="input-group">
+            <label>Butterscotch Small Cone (₹10):</label>
+            <input type="number" id="butterscotchSmall" min="0" value="0">
+        </div>
+        <div class="input-group">
+            <label>Butterscotch Medium Cone (₹20):</label>
+            <input type="number" id="butterscotchMedium" min="0" value="0">
+        </div>
+        <div class="input-group">
+            <label>Butterscotch Large Cone (₹30):</label>
+            <input type="number" id="butterscotchLarge" min="0" value="0">
+        </div>
+        <div class="input-group">
+            <label>Choco Disk Cone (₹50):</label>
+            <input type="number" id="chocoDisk" min="0" value="0">
+        </div>
+        <div class="input-group">
+            <label>Choco Brownie Cone (₹50):</label>
+            <input type="number" id="chocoBrownie" min="0" value="0">
+        </div>
+        <button onclick="generateBill()">Generate & Print Bill</button>
+    </div>
+
+    <div id="billOutput"></div>
+
+    <script>
+        const iceCreams = [
+            { id: 'butterscotchBig', name: 'Butterscotch Big Cup', price: 30 },
+            { id: 'shahiPista', name: 'Shahi Pista', price: 30 },
+            { id: 'butterscotchSmall', name: 'Butterscotch Small Cone', price: 10 },
+            { id: 'butterscotchMedium', name: 'Butterscotch Medium Cone', price: 20 },
+            { id: 'butterscotchLarge', name: 'Butterscotch Large Cone', price: 30 },
+            { id: 'chocoDisk', name: 'Choco Disk Cone', price: 50 },
+            { id: 'chocoBrownie', name: 'Choco Brownie Cone', price: 50 }
+        ];
+
+        function generateBill() {
+            let totalAmount = 0;
+            let billItems = [];
+
+            // Calculate totals for each item
+            iceCreams.forEach(item => {
+                const quantity = parseInt(document.getElementById(item.id).value) || 0;
+                if (quantity > 0) {
+                    const itemTotal = quantity * item.price;
+                    totalAmount += itemTotal;
+                    billItems.push({
+                        name: item.name,
+                        quantity: quantity,
+                        total: itemTotal
+                    });
+                }
+            });
+
+            if (billItems.length === 0) {
+                alert('Please enter at least one item quantity');
+                return;
+            }
+
+            // Calculate commission and payable amount
+            const commission = totalAmount * 0.17;
+            const payableAmount = totalAmount - commission;
+
+            // Generate bill HTML
+            const currentDate = new Date().toLocaleString();
+            let billHtml = `
+                <h3>Ice Cream Bill</h3>
+                <p>Date & Time: ${currentDate}</p>
+                <table>
+                    <tr>
+                        <th>Ice Cream Name</th>
+                        <th>Quantity</th>
+                        <th>Amount (₹)</th>
+                    </tr>
+            `;
+
+            billItems.forEach(item => {
+                billHtml += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.total}</td>
+                    </tr>
+                `;
+            });
+
+            billHtml += `
+                </table>
+                <div class="total-section">
+                    <p>Total Amount: ₹${totalAmount.toFixed(2)}</p>
+                    <p>Hocker Commission (17%): ₹${commission.toFixed(2)}</p>
+                    <p>Payable Amount: ₹${payableAmount.toFixed(2)}</p>
+                </div>
+            `;
+
+            // Display and print bill
+            const billOutput = document.getElementById('billOutput');
+            billOutput.innerHTML = billHtml;
+            billOutput.style.display = 'block';
+            
+            setTimeout(() => window.print(), 100);
+        }
+    </script>
+</body>
+</html>
