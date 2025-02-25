@@ -1,198 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ice Cream Billing System</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-
-        .input-section {
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            margin: 10px 0;
-        }
-
-        .input-group label {
-            display: inline-block;
-            width: 200px;
-        }
-
-        .input-group input {
-            padding: 5px;
-            width: 100px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        #billOutput {
-            display: none;
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .total-section {
-            text-align: right;
-        }
-
-        @media print {
-            .input-section, button {
-                display: none;
-            }
-            #billOutput {
-                display: block;
-                border: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ice Cream Billing System</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      text-align: center;
+      color: #fff;
+      background: linear-gradient(135deg, #0066cc, #004499);
+      padding: 20px;
+      margin: -20px -20px 20px -20px;
+      border-radius: 10px 10px 0 0;
+      font-size: 2.5em;
+      font-weight: bold;
+    }
+    
+    .input-section {
+      margin-bottom: 20px;
+    }
+    
+    .product-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .product-name {
+      flex: 2;
+      padding-right: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .quantity-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+    
+    .quantity-input:hover {
+      border-color: #0066cc;
+    }
+    
+    .quantity-input:focus {
+      outline: none;
+      border-color: #004499;
+      box-shadow: 0 0 5px rgba(0, 102, 204, 0.5);
+    }
+    
+    .generate-btn, .print-btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #0066cc, #004499);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background 0.3s ease;
+    }
+    
+    .generate-btn:hover, .print-btn:hover {
+      background: linear-gradient(135deg, #0055aa, #003377);
+    }
+    
+    .generate-btn:active, .print-btn:active {
+      background: linear-gradient(135deg, #004499, #002255);
+    }
+    
+    .bill-section {
+      display: none;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      background-color: #fafafa;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .bill-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .bill-header h2 {
+      color: #0066cc;
+      font-size: 2em;
+      margin: 0;
+    }
+    
+    .bill-datetime {
+      text-align: right;
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .bill-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    .bill-table th, .bill-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .bill-table th {
+      background-color: #0066cc;
+      color: white;
+    }
+    
+    .bill-table tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    
+    .bill-summary {
+      margin-top: 20px;
+      text-align: right;
+    }
+    
+    .summary-row {
+      margin-bottom: 8px;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .summary-total {
+      font-weight: bold;
+      font-size: 20px;
+      color: #0066cc;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    @media print {
+      .input-section, .generate-btn, .print-btn, .footer {
+        display: none;
+      }
+      
+      .bill-section {
+        display: block;
+        border: none;
+        box-shadow: none;
+      }
+      
+      body, .container {
+        background-color: white;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Ashwani Icecream</h1>
+    
     <div class="input-section">
-        <h2>Ice Cream Billing System</h2>
-        <div class="input-group">
-            <label>Butterscotch Big Cup (₹30):</label>
-            <input type="number" id="butterscotchBig" min="0" value="0">
-        </div>
-        <div class="input-group">
-            <label>Shahi Pista (₹30):</label>
-            <input type="number" id="shahiPista" min="0" value="0">
-        </div>
-        <div class="input-group">
-            <label>Butterscotch Small Cone (₹10):</label>
-            <input type="number" id="butterscotchSmall" min="0" value="0">
-        </div>
-        <div class="input-group">
-            <label>Butterscotch Medium Cone (₹20):</label>
-            <input type="number" id="butterscotchMedium" min="0" value="0">
-        </div>
-        <div class="input-group">
-            <label>Butterscotch Large Cone (₹30):</label>
-            <input type="number" id="butterscotchLarge" min="0" value="0">
-        </div>
-        <div class="input-group">
-            <label>Choco Disk Cone (₹50):</label>
-            <input type="number" id="chocoDisk" min="0" value="0">
-        </div>
-        <div class="input-group">
-            <label>Choco Brownie Cone (₹50):</label>
-            <input type="number" id="chocoBrownie" min="0" value="0">
-        </div>
-        <button onclick="generateBill()">Generate & Print Bill</button>
+      <div class="product-row">
+        <div class="product-name">Butterscotch Big Cup (₹30)</div>
+        <input type="number" class="quantity-input" data-price="30" data-name="Butterscotch Big Cup (₹30)" min="0" value="0">
+      </div>
+      
+      <div class="product-row">
+        <div class="product-name">Shahi Pista (₹30)</div>
+        <input type="number" class="quantity-input" data-price="30" data-name="Shahi Pista (₹30)" min="0" value="0">
+      </div>
+      
+      <div class="product-row">
+        <div class="product-name">Butterscotch Small Cone (₹10)</div>
+        <input type="number" class="quantity-input" data-price="10" data-name="Butterscotch Small Cone (₹10)" min="0" value="0">
+      </div>
+      
+      <div class="product-row">
+        <div class="product-name">Butterscotch Medium Cone (₹20)</div>
+        <input type="number" class="quantity-input" data-price="20" data-name="Butterscotch Medium Cone (₹20)" min="0" value="0">
+      </div>
+      
+      <div class="product-row">
+        <div class="product-name">Butterscotch Large Cone (₹30)</div>
+        <input type="number" class="quantity-input" data-price="30" data-name="Butterscotch Large Cone (₹30)" min="0" value="0">
+      </div>
+      
+      <div class="product-row">
+        <div class="product-name">Choco Disk Cone (₹50)</div>
+        <input type="number" class="quantity-input" data-price="50" data-name="Choco Disk Cone (₹50)" min="0" value="0">
+      </div>
+      
+      <div class="product-row">
+        <div class="product-name">Choco Brownie Cone (₹50)</div>
+        <input type="number" class="quantity-input" data-price="50" data-name="Choco Brownie Cone (₹50)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Fruitfull Orange (₹10)</div>
+        <input type="number" class="quantity-input" data-price="10" data-name="Fruitfull Orange (₹10)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Vanila Cup (₹10)</div>
+        <input type="number" class="quantity-input" data-price="10" data-name="Vanila Cup (₹10)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Chocolate (₹10)</div>
+        <input type="number" class="quantity-input" data-price="10" data-name="Chocolate (₹10)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Chocolate (₹15)</div>
+        <input type="number" class="quantity-input" data-price="15" data-name="Chocolate (₹15)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Chocolate (₹20)</div>
+        <input type="number" class="quantity-input" data-price="20" data-name="Chocolate (₹20)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Bomber (₹30)</div>
+        <input type="number" class="quantity-input" data-price="30" data-name="Bomber (₹30)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">American Nuts Cup (₹35)</div>
+        <input type="number" class="quantity-input" data-price="35" data-name="American Nuts Cup (₹35)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">StrawBerry Sundae (₹30)</div>
+        <input type="number" class="quantity-input" data-price="30" data-name="StrawBerry Sundae (₹30)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Chocolate Sundae (₹30)</div>
+        <input type="number" class="quantity-input" data-price="30" data-name="Chocolate Sundae (₹30)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Gourmet Pistatchio (₹50)</div>
+        <input type="number" class="quantity-input" data-price="50" data-name="Gourmet Pistatchio (₹50)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Chocolate Volacano Cone (₹30)</div>
+        <input type="number" class="quantity-input" data-price="30" data-name="Chocolate Volacano Cone (₹30)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">StrawBerry Sundae (₹20)</div>
+        <input type="number" class="quantity-input" data-price="20" data-name="StrawBerry Sundae (₹20)" min="0" value="0">
+      </div>
+
+      <div class="product-row">
+        <div class="product-name">Chocolate Sundae (₹20)</div>
+        <input type="number" class="quantity-input" data-price="20" data-name="Chocolate Sundae (₹20)" min="0" value="0">
+      </div>
     </div>
+    
+    <button class="generate-btn" onclick="generateBill()">Generate Bill</button>
+    
+    <div class="bill-section" id="billSection">
+      <div class="bill-header">
+        <h2>Ice Cream Bill</h2>
+      </div>
+      
+      <div class="bill-datetime" id="billDateTime"></div>
+      
+      <table class="bill-table">
+        <thead>
+          <tr>
+            <th>Ice Cream</th>
+            <th>Quantity</th>
+            <th>Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody id="billTableBody">
+          <!-- Bill items will be inserted here -->
+        </tbody>
+      </table>
+      
+      <div class="bill-summary">
+        <div class="summary-row">Total Amount: ₹<span id="totalAmount">0</span></div>
+        <div class="summary-row">Hawker's Commission (17%): ₹<span id="commission">0</span></div>
+        <div class="summary-row summary-total">Payable Amount: ₹<span id="payableAmount">0</span></div>
+      </div>
+    </div>
+    
+    <button class="print-btn" onclick="printBill()">Print Bill</button>
 
-    <div id="billOutput"></div>
-
-    <script>
-        const iceCreams = [
-            { id: 'butterscotchBig', name: 'Butterscotch Big Cup', price: 30 },
-            { id: 'shahiPista', name: 'Shahi Pista', price: 30 },
-            { id: 'butterscotchSmall', name: 'Butterscotch Small Cone', price: 10 },
-            { id: 'butterscotchMedium', name: 'Butterscotch Medium Cone', price: 20 },
-            { id: 'butterscotchLarge', name: 'Butterscotch Large Cone', price: 30 },
-            { id: 'chocoDisk', name: 'Choco Disk Cone', price: 50 },
-            { id: 'chocoBrownie', name: 'Choco Brownie Cone', price: 50 }
-        ];
-
-        function generateBill() {
-            let totalAmount = 0;
-            let billItems = [];
-
-            // Calculate totals for each item
-            iceCreams.forEach(item => {
-                const quantity = parseInt(document.getElementById(item.id).value) || 0;
-                if (quantity > 0) {
-                    const itemTotal = quantity * item.price;
-                    totalAmount += itemTotal;
-                    billItems.push({
-                        name: item.name,
-                        quantity: quantity,
-                        total: itemTotal
-                    });
-                }
-            });
-
-            if (billItems.length === 0) {
-                alert('Please enter at least one item quantity');
-                return;
-            }
-
-            // Calculate commission and payable amount
-            const commission = totalAmount * 0.17;
-            const payableAmount = totalAmount - commission;
-
-            // Generate bill HTML
-            const currentDate = new Date().toLocaleString();
-            let billHtml = `
-                <h3>Ice Cream Bill</h3>
-                <p>Date & Time: ${currentDate}</p>
-                <table>
-                    <tr>
-                        <th>Ice Cream Name</th>
-                        <th>Quantity</th>
-                        <th>Amount (₹)</th>
-                    </tr>
-            `;
-
-            billItems.forEach(item => {
-                billHtml += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.total}</td>
-                    </tr>
-                `;
-            });
-
-            billHtml += `
-                </table>
-                <div class="total-section">
-                    <p>Total Amount: ₹${totalAmount.toFixed(2)}</p>
-                    <p>Hocker Commission (17%): ₹${commission.toFixed(2)}</p>
-                    <p>Payable Amount: ₹${payableAmount.toFixed(2)}</p>
-                </div>
-            `;
-
-            // Display and print bill
-            const billOutput = document.getElementById('billOutput');
-            billOutput.innerHTML = billHtml;
-            billOutput.style.display = 'block';
-            
-            setTimeout(() => window.print(), 100);
+    <div class="footer">
+      &copy; 2023 Ashwani Icecream. All rights reserved.
+    </div>
+  </div>
+  
+  <script>
+    function generateBill() {
+      const inputs = document.querySelectorAll('.quantity-input');
+      const billTableBody = document.getElementById('billTableBody');
+      const billSection = document.getElementById('billSection');
+      const billDateTime = document.getElementById('billDateTime');
+      
+      // Clear previous bill
+      billTableBody.innerHTML = '';
+      
+      // Set current date and time
+      const now = new Date();
+      const dateTimeString = now.toLocaleString();
+      billDateTime.textContent = `Date & Time: ${dateTimeString}`;
+      
+      let totalAmount = 0;
+      let hasItems = false;
+      
+      // Process each product
+      inputs.forEach(input => {
+        const quantity = parseInt(input.value) || 0;
+        if (quantity > 0) {
+          hasItems = true;
+          const price = parseFloat(input.dataset.price);
+          const name = input.dataset.name;
+          const amount = quantity * price;
+          
+          totalAmount += amount;
+          
+          // Add row to bill table
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${name}</td>
+            <td>${quantity}</td>
+            <td>₹${amount.toFixed(2)}</td>
+          `;
+          billTableBody.appendChild(row);
         }
-    </script>
+      });
+      
+      if (!hasItems) {
+        alert('Please add at least one item to generate a bill.');
+        return;
+      }
+      
+      // Calculate commission and payable amount
+      const commission = totalAmount * 0.17;
+      const payableAmount = totalAmount - commission;
+      
+      // Update summary
+      document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+      document.getElementById('commission').textContent = commission.toFixed(2);
+      document.getElementById('payableAmount').textContent = payableAmount.toFixed(2);
+      
+      // Show bill section
+      billSection.style.display = 'block';
+    }
+    
+    function printBill() {
+      if (document.getElementById('billSection').style.display === 'block') {
+        window.print();
+      } else {
+        alert('Please generate a bill first.');
+      }
+    }
+  </script>
 </body>
 </html>
